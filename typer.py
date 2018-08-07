@@ -49,7 +49,7 @@ class TyperThread(threading.Thread):
          log(self.userId, "can't check chat allies!")
          return
       resp = resp["response"]
-      
+
       # Проверяем отсутствующих
       self.locker.acquire(blocking=True)
       toAdd = []
@@ -57,7 +57,7 @@ class TyperThread(threading.Thread):
          if (ally not in resp) and (ally != self.userId):
             toAdd += [ally]
       self.locker.release()
-      
+
       # Добавляем отсутствующих
       for add in toAdd:
          resp = None
@@ -95,7 +95,7 @@ class TyperThread(threading.Thread):
          sleep(delay)
          self.checkAllies()
          sleep(delay)
-      
+
 
    # Обновляет список союзников для данного набирающего
    def updateAllies(self, allies):
@@ -165,7 +165,7 @@ def commandStop(args):
 # Начать набор сообщений
 def commandStart(args):
    global needTyping
-   
+
    needTyping = True
    log("Typing started.")
 
@@ -217,14 +217,14 @@ def commandAddTyper(args):
    if len(args) > 2:
       login = args[1]
       passwd = args[2]
-      
+
       resp = None
       try:
          resp = request(tokenAddress % (login, passwd)).json()
       except JSONDecodeError:
          log("JSONDecodeError at line: %d(getting token from password)." % (getLineNumber()))
          return
-   
+
       # Проверка капчи
       while ("error" in resp) and (resp["error"] == "need_captcha"):
          print("Go to %s and type captha here." % (resp["captcha_img"]))
@@ -254,13 +254,13 @@ def commandAddTyper(args):
          log("Wrong token.")
          return
       userId = resp["response"][0]["id"]
-   
+
    thread = TyperThread(userId, token, chatId)
    thread.daemon = True
    typers[userId] = {"token": token, "chat_id": chatId, "thread": thread}
-   
+
    allies.update([userId])
-   
+
    notifyUpdateAllies()
    thread.start()
 
@@ -306,7 +306,7 @@ def commandAddAllies(args):
 
    allies.update(ids)
    notifyUpdateAllies()
-   
+
    log("Allies added.")
 
 
@@ -366,5 +366,6 @@ if __name__ == "__main__":
    delay = 1
 
    sys.stdout.write("> ")
-   
+
    commandsAccepter(setupCommands())
+
